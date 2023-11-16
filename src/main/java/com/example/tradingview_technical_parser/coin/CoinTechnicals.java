@@ -1,5 +1,7 @@
 package com.example.tradingview_technical_parser.coin;
 
+import java.util.Objects;
+
 public class CoinTechnicals {
 
     private String pairName;
@@ -41,6 +43,34 @@ public class CoinTechnicals {
 
     public void setPairName(String pairName) {
         this.pairName = pairName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CoinTechnicals that)) return false;
+
+        return Objects.equals(getPairName(), that.getPairName())
+                && getOscillators() == that.getOscillators()
+                && getMovingAverages() == that.getMovingAverages()
+                && getSummary() == that.getSummary();
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "CoinTechnicals{" +
+                "pairName='" + pairName + '\'' +
+                ", oscillators=" + oscillators +
+                ", movingAverages=" + movingAverages +
+                ", summary=" + summary +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPairName(), getOscillators(), getMovingAverages(), getSummary());
     }
 
     public Decision getOscillators() {

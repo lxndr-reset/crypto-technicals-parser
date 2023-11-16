@@ -2,9 +2,13 @@ package com.example.tradingview_technical_parser.controller;
 
 import com.example.tradingview_technical_parser.coin.CoinTechnicals;
 import com.example.tradingview_technical_parser.service.ParsingService;
+import com.example.tradingview_technical_parser.utils.PairnameMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.io.FileNotFoundException;
+import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/parser")
@@ -18,9 +22,24 @@ public class RestController {
 
     @GetMapping("/parse/matic")
     public CoinTechnicals.TechnicalsRecord parseMatic() {
-        CoinTechnicals technicals = parsingService.parseTechnicals("https://www.tradingview.com/symbols/MATICUSD/technicals/");
+        CoinTechnicals technicals = parsingService.parseTechnicals(new PairnameMetadata("https://www.tradingview.com/symbols/MATICUSD/technicals/"
+                , "MATICUSD")
+        );
 
         return technicals.getRecord();
+    }
+
+    @GetMapping("/parse/all")
+    public CoinTechnicals.TechnicalsRecord[] parseAll() throws FileNotFoundException {
+        List<CoinTechnicals> technicals = parsingService.parseTechnicalsFromPairnamesFile();
+
+        CoinTechnicals.TechnicalsRecord[] records = new CoinTechnicals.TechnicalsRecord[technicals.size()];
+
+        for (int i = 0; i < technicals.size(); i++) {
+            records[i] = technicals.get(i).getRecord();
+        }
+
+        return records;
     }
 
 }
