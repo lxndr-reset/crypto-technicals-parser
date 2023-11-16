@@ -11,12 +11,15 @@ public enum Decision {
     Decision(String value) {
         this.value = value;
     }
+
     public static Decision fromString(String text) {
         for (Decision decision : Decision.values()) {
+
             if (decision.value.equalsIgnoreCase(text)) {
                 return decision;
             }
         }
+
         throw new IllegalArgumentException("No enum constant " + text);
     }
 }

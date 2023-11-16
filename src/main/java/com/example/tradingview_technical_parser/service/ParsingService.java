@@ -5,6 +5,9 @@ import com.example.tradingview_technical_parser.coin.Decision;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -25,14 +28,10 @@ public class ParsingService {
     private static CoinTechnicals parseCoinTechnicals(WebDriver driver) {
         pauseExecution();
 
-        String oscillators = extractElementText(driver, OSCILLATORS_XPATH);
-        String averages = extractElementText(driver, MOVING_AVERAGES_XPATH);
-        String summary = extractElementText(driver, SUMMARY_XPATH);
-
         return new CoinTechnicals("MATICUSD",
-                Decision.fromString(oscillators),
-                Decision.fromString(averages),
-                Decision.fromString(summary)
+                Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)),
+                Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)),
+                Decision.fromString(extractElementText(driver, SUMMARY_XPATH))
         );
     }
 
@@ -43,7 +42,7 @@ public class ParsingService {
     /**
      * Pauses the execution of the current thread for 1000 milliseconds (1 second).
      * If the thread is interrupted while sleeping, the InterruptedException is ignored.
-     * Instant parsing without pause may return all values as NEUTRAL.
+     * Instant parsing without pausing may return all values as NEUTRAL.
      */
     private static void pauseExecution() {
         try {
@@ -53,14 +52,26 @@ public class ParsingService {
     }
 
     public CoinTechnicals parseTechnicals(String url) {
-        WebDriver driver = new EdgeDriver();
+        WebDriver driver = getEdgeDriverWithDefaultOptions();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
         try {
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
             driver.get(url);
-            
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+
             return parseCoinTechnicals(driver);
+
         } finally {
-            driver.close();
+            driver.quit();
         }
+    }
+
+    private WebDriver getEdgeDriverWithDefaultOptions() {
+        EdgeOptions options = new EdgeOptions();
+        options.addArguments("headless");
+
+        return new EdgeDriver(options);
     }
 }
