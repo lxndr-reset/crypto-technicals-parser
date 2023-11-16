@@ -19,12 +19,10 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class ParsingService {
-
     private static final String OSCILLATORS_XPATH = "//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]";
     private static final String MOVING_AVERAGES_XPATH = "//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[3]";
     private static final String SUMMARY_XPATH = "//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[2]";
@@ -36,13 +34,52 @@ public class ParsingService {
      * @return CoinTechnicals object containing the technical analysis for the coin
      */
 
-    private static String extractElementText(WebDriver driver, String path) {
-        return driver.findElement(By.xpath(path)).getText().split("\n")[6].toLowerCase();
+    private static String extractElementText(WebDriver driver, String xpath) {
+        return driver.findElement(By.xpath(xpath)).getText().split("\n")[6].toLowerCase();
     }
 
+    private static void waitFor(int duration) {
+        try {
+            Thread.sleep(Duration.ofSeconds(duration));
+        } catch (InterruptedException ignored) {
 
+        }
+    }
+
+    /**
+     * Parses the technical analysis for a coin using the provided metadata.
+     * Includes pausing.
+     * Instant parsing without pausing may return all values as NEUTRAL.
+     *
+     * @param metadata the metadata for the coin, containing the pair name and URL
+     * @return a CoinTechnicals object containing the technical analysis for the coin
+     */
     public CoinTechnicals parseTechnicals(PairnameMetadata metadata) {
         WebDriver driver = getEdgeDriverWithDefaultOptions();
+
+        waitFor(3);
+
+        try {
+            driver.get(metadata.getURL());
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+
+            return new CoinTechnicals(metadata.getPairName(),
+                    Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)),
+                    Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)),
+                    Decision.fromString(extractElementText(driver, SUMMARY_XPATH))
+            );
+
+        } finally {
+            driver.quit();
+        }
+    }
+
+    public CoinTechnicals parseTechnicals(PairnameMetadata metadata, int delayInSeconds) {
+        WebDriver driver = getEdgeDriverWithDefaultOptions();
+
+        waitFor(delayInSeconds);
 
         try {
             driver.get(metadata.getURL());
@@ -78,7 +115,12 @@ public class ParsingService {
         List<CoinTechnicals> parsedTechnicals = new CopyOnWriteArrayList<>();
 
         pairnameMetadatas.parallelStream().forEach(metadata -> {
-            parsedTechnicals.add(this.parseTechnicals(metadata));
+            CoinTechnicals technicals = this.parseTechnicals(metadata);
+
+            if (technicals.areAllNeutral()) {
+                technicals = this.parseTechnicals(metadata, 5);
+            }
+            parsedTechnicals.add(technicals);
         });
 
         return parsedTechnicals;
@@ -86,10 +128,10 @@ public class ParsingService {
 
     private WebDriver getEdgeDriverWithDefaultOptions() {
         EdgeOptions options = new EdgeOptions();
-        options.addArguments("headless");
+//        options.addArguments("headless");
 
         EdgeDriver edgeDriver = new EdgeDriver(options);
-        edgeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        edgeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Integer.MAX_VALUE));
 
         return edgeDriver;
     }

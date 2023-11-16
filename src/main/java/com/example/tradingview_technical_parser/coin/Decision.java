@@ -22,4 +22,8 @@ public enum Decision {
 
         throw new IllegalArgumentException("No enum constant " + text);
     }
+
+    public String getValue(){
+        return this.value;
+    }
 }

@@ -3,24 +3,12 @@ package com.example.tradingview_technical_parser.coin;
 import java.util.Objects;
 
 public class CoinTechnicals {
-
     private String pairName;
     private Decision oscillators;
     private Decision movingAverages;
     private Decision summary;
 
-
-    /**
-     * Creates CoinTechnicals and uses the execution of the current thread for 1000 milliseconds (1 second).
-     * TInterruptedException is ignored.
-     * Instant parsing without pausing may return all values as NEUTRAL.
-     */
     public CoinTechnicals(String pairName, Decision oscillators, Decision movingAverages, Decision summary) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
-
         this.pairName = pairName;
         this.oscillators = oscillators;
         this.movingAverages = movingAverages;
@@ -57,9 +45,9 @@ public class CoinTechnicals {
     }
 
 
-
     @Override
     public String toString() {
+
         return "CoinTechnicals{" +
                 "pairName='" + pairName + '\'' +
                 ", oscillators=" + oscillators +
@@ -95,6 +83,13 @@ public class CoinTechnicals {
 
     public void setSummary(Decision summary) {
         this.summary = summary;
+    }
+
+    public boolean areAllNeutral() {
+
+        return oscillators.equals(summary)
+                && summary.equals(movingAverages)
+                && movingAverages.equals(Decision.NEUTRAL);
     }
 
     public record TechnicalsRecord(String coinPair, Decision oscillators, Decision movingAverages, Decision summary) {
