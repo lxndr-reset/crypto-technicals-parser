@@ -25,31 +25,11 @@ public class ParsingService {
      * @param driver the WebDriver instance for scraping coin technical data
      * @return CoinTechnicals object containing the technical analysis for the coin
      */
-    private static CoinTechnicals parseCoinTechnicals(WebDriver driver) {
-        pauseExecution();
-
-        return new CoinTechnicals("MATICUSD",
-                Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)),
-                Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)),
-                Decision.fromString(extractElementText(driver, SUMMARY_XPATH))
-        );
-    }
 
     private static String extractElementText(WebDriver driver, String path) {
         return driver.findElement(By.xpath(path)).getText().split("\n")[6].toLowerCase();
     }
 
-    /**
-     * Pauses the execution of the current thread for 1000 milliseconds (1 second).
-     * If the thread is interrupted while sleeping, the InterruptedException is ignored.
-     * Instant parsing without pausing may return all values as NEUTRAL.
-     */
-    private static void pauseExecution() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
-    }
 
     public CoinTechnicals parseTechnicals(String url) {
         WebDriver driver = getEdgeDriverWithDefaultOptions();
@@ -61,7 +41,11 @@ public class ParsingService {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
 
-            return parseCoinTechnicals(driver);
+            return new CoinTechnicals("MATICUSD",
+                    Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)),
+                    Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)),
+                    Decision.fromString(extractElementText(driver, SUMMARY_XPATH))
+            );
 
         } finally {
             driver.quit();

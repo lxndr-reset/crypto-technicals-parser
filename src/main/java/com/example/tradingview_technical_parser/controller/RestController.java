@@ -17,10 +17,10 @@ public class RestController {
     }
 
     @GetMapping("/parse/matic")
-    public CoinTechnicals parseMatic() {
+    public CoinTechnicals.TechnicalsRecord parseMatic() {
         CoinTechnicals technicals = parsingService.parseTechnicals("https://www.tradingview.com/symbols/MATICUSD/technicals/");
 
-        return technicals;
+        return technicals.getRecord();
     }
 
 }
