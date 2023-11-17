@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TradingviewTechnicalParserApplication {
 
     public static void main(String[] args) {
+        System.out.println(java.util.concurrent.ForkJoinPool.commonPool().getParallelism());
+        System.setProperty("webdriver.chrome.driver","C:\\WebDriver\\bin\\chromedriver.exe");
         SpringApplication.run(TradingviewTechnicalParserApplication.class, args);
     }
 }

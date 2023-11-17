@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/parser")
@@ -21,7 +23,7 @@ public class RestController {
     }
 
     @GetMapping("/parse/matic")
-    public CoinTechnicals.TechnicalsRecord parseMatic() {
+    public CoinTechnicals.TechnicalsRecord parseMatic() throws InterruptedException {
         CoinTechnicals technicals = parsingService.parseTechnicals(new PairnameMetadata("https://www.tradingview.com/symbols/MATICUSD/technicals/"
                 , "MATICUSD")
         );
@@ -30,7 +32,7 @@ public class RestController {
     }
 
     @GetMapping("/parse/all")
-    public CoinTechnicals.TechnicalsRecord[] parseAll() throws FileNotFoundException {
+    public CoinTechnicals.TechnicalsRecord[] parseAll() throws InterruptedException, ExecutionException, IOException {
         List<CoinTechnicals> technicals = parsingService.parseTechnicalsFromPairnamesFile();
 
         CoinTechnicals.TechnicalsRecord[] records = new CoinTechnicals.TechnicalsRecord[technicals.size()];
