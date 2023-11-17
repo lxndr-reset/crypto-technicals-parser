@@ -23,7 +23,7 @@ public class RestController {
     }
 
     @GetMapping("/parse/matic")
-    public CoinTechnicals.TechnicalsRecord parseMatic() throws InterruptedException {
+    public CoinTechnicals.TechnicalsRecord parseMatic() {
         CoinTechnicals technicals = parsingService.parseTechnicals(new PairnameMetadata("https://www.tradingview.com/symbols/MATICUSD/technicals/"
                 , "MATICUSD")
         );

@@ -1,5 +1,6 @@
 package com.example.tradingview_technical_parser.coin;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 public class CoinTechnicals {
@@ -92,6 +93,7 @@ public class CoinTechnicals {
                 && movingAverages.equals(Decision.NEUTRAL);
     }
 
-    public record TechnicalsRecord(String coinPair, Decision oscillators, Decision movingAverages, Decision summary) {
+    public record TechnicalsRecord(String coinPair, Decision oscillators, Decision movingAverages,
+                                   Decision summary) implements Serializable {
     }
 }
