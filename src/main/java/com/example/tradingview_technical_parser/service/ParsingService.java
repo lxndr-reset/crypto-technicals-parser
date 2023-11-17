@@ -1,7 +1,7 @@
 package com.example.tradingview_technical_parser.service;
 
-import com.example.tradingview_technical_parser.coin.CoinTechnicals;
-import com.example.tradingview_technical_parser.coin.Decision;
+import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
+import com.example.tradingview_technical_parser.technicals.Decision;
 import com.example.tradingview_technical_parser.utils.PairnameMetadata;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -61,8 +61,9 @@ public class ParsingService {
     /**
      * When going to tradingview.com/technicals/etc, analysis results are loaded after body loading, so we
      * wait until their indexes aren't loaded.
-     *
+     * <p>
      * Sometimes there are cases when parser returns old data, so added sleep()
+     *
      * @param driver WebDriver with a parsed link
      * @throws InterruptedException
      */
@@ -70,7 +71,7 @@ public class ParsingService {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
 
         wait.until(
-                ExpectedConditions.and(
+                ExpectedConditions.or(
                         not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[1]/span[2]"), "0")),
                         not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[2]/span[2]"), "0")),
                         not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[3]/span[2]"), "0"))
@@ -113,7 +114,7 @@ public class ParsingService {
         }
     }
 
-    public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, ExecutionException, FileNotFoundException {
+    public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, FileNotFoundException {
         BufferedReader reader = new BufferedReader(
                 new FileReader("src/main/java/com/example/tradingview_technical_parser/utils/pairnames")
         );
@@ -152,7 +153,7 @@ public class ParsingService {
 
     private WebDriver buildDriverWithOptions() {
         ChromeOptions options = new ChromeOptions();
-//        options.addArguments("headless");
+        options.addArguments("headless");
 
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Integer.MAX_VALUE));

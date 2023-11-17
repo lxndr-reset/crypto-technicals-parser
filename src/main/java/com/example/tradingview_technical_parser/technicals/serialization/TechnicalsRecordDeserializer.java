@@ -1,6 +1,6 @@
-package com.example.tradingview_technical_parser.coin.serialization;
+package com.example.tradingview_technical_parser.technicals.serialization;
 
-import com.example.tradingview_technical_parser.coin.CoinTechnicals;
+import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Deserializer;
 
