@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 import static java.util.stream.Collectors.toSet;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBe;
 
 @Service
 @EnableAsync
@@ -57,6 +59,28 @@ public class ParsingService {
     }
 
     /**
+     * When going to tradingview.com/technicals/etc, analysis results are loaded after body loading, so we
+     * wait until their indexes aren't loaded.
+     *
+     * Sometimes there are cases when parser returns old data, so added sleep()
+     * @param driver WebDriver with a parsed link
+     * @throws InterruptedException
+     */
+    private static void waitUntilDataAreUpdated(WebDriver driver) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
+
+        wait.until(
+                ExpectedConditions.and(
+                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[1]/span[2]"), "0")),
+                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[2]/span[2]"), "0")),
+                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[3]/span[2]"), "0"))
+                )
+        );
+
+        Thread.sleep(300);
+    }
+
+    /**
      * Parses the technical analysis for a coin using the provided metadata.
      * Includes pausing.
      *
@@ -73,7 +97,7 @@ public class ParsingService {
         try {
             driver.get(metadata.getURL());
 
-            waitUntilDataAreValid(driver);
+            waitUntilDataAreUpdated(driver);
 
             return new CoinTechnicals(
                     metadata.getPairName(),
@@ -87,12 +111,6 @@ public class ParsingService {
         } finally {
             driver.quit();
         }
-    }
-
-    private static void waitUntilDataAreValid(WebDriver driver) throws InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
-        Thread.sleep(3000);
     }
 
     public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, ExecutionException, FileNotFoundException {
@@ -134,7 +152,7 @@ public class ParsingService {
 
     private WebDriver buildDriverWithOptions() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
+//        options.addArguments("headless");
 
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Integer.MAX_VALUE));
