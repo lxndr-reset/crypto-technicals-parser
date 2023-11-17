@@ -18,13 +18,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @EnableAsync
@@ -46,19 +44,16 @@ public class ParsingService {
      * @return CoinTechnicals object containing the technical analysis for the coin
      */
 
+
     private static String extractElementText(WebDriver driver, String xpath) {
-        return driver.findElement(By.xpath(xpath)).getText().split("\n")[6].toLowerCase();
+        String text = driver.findElement(By.xpath(xpath)).getText();
+        String[] split = text.split("\n");
+        if (split.length > 6) return split[6].toLowerCase();
+        return "";
     }
 
-
-    private static Set<PairnameMetadata> readPairnameMetadata(BufferedReader reader) {
-        Set<PairnameMetadata> pairnameMetadata = new HashSet<>();
-
-        reader.lines().forEach(string -> {
-            pairnameMetadata.add(new PairnameMetadata(string));
-        });
-
-        return pairnameMetadata;
+    private static Set<PairnameMetadata> fillMetadataFromFile(BufferedReader reader) {
+        return reader.lines().map(PairnameMetadata::new).collect(toSet());
     }
 
     /**
@@ -78,9 +73,7 @@ public class ParsingService {
         try {
             driver.get(metadata.getURL());
 
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
-            Thread.sleep(3000);
+            waitUntilDataAreValid(driver);
 
             return new CoinTechnicals(
                     metadata.getPairName(),
@@ -96,37 +89,47 @@ public class ParsingService {
         }
     }
 
-    public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, ExecutionException, FileNotFoundException {
-        BufferedReader reader = new BufferedReader(new FileReader("src/main/java/com/example/tradingview_technical_parser/utils/pairnames"));
-        Set<PairnameMetadata> pairnameMetadata = readPairnameMetadata(reader);
+    private static void waitUntilDataAreValid(WebDriver driver) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+        Thread.sleep(3000);
+    }
 
+    public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, ExecutionException, FileNotFoundException {
+        BufferedReader reader = new BufferedReader(
+                new FileReader("src/main/java/com/example/tradingview_technical_parser/utils/pairnames")
+        );
+        Set<PairnameMetadata> pairnameMetadata = fillMetadataFromFile(reader);
         List<Callable<CoinTechnicals>> runnableList = new ArrayList<>();
 
         for (PairnameMetadata metadata : pairnameMetadata) {
-
-            runnableList.add(() -> {
-                CoinTechnicals technicals = this.parseTechnicals(metadata);
-
-                if (technicals.areAllNeutral()) {
-                    technicals = this.parseTechnicals(metadata);
-                }
-
-                return technicals;
-            });
+            runnableList.add(createCallableForMetadata(metadata));
         }
 
         List<Future<CoinTechnicals>> futures = executor.invokeAll(runnableList);
         List<CoinTechnicals> parsedTechnicals = new ArrayList<>();
 
         for (Future<CoinTechnicals> future : futures) {
-            while (!future.isDone()) {
-                Thread.sleep(100);
-            }
-
-            parsedTechnicals.add(future.get());
+            parsedTechnicals.add(CompletableFuture.supplyAsync(() -> {
+                try {
+                    return future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }).join());
         }
 
         return parsedTechnicals;
+    }
+
+    private Callable<CoinTechnicals> createCallableForMetadata(PairnameMetadata metadata) {
+        return () -> {
+            CoinTechnicals technicals = this.parseTechnicals(metadata);
+            if (technicals.areAllNeutral()) {
+                technicals = this.parseTechnicals(metadata);
+            }
+            return technicals;
+        };
     }
 
     private WebDriver buildDriverWithOptions() {
