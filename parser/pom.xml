@@ -9,6 +9,8 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <packaging>jar</packaging>
+
     <artifactId>parser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>parser</name>
@@ -53,6 +55,7 @@
     </dependencies>
 
     <build>
+        <finalName>parser</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

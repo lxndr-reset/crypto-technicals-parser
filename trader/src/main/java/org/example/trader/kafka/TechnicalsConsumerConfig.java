@@ -1,4 +1,4 @@
-package com.example.trader.kafka;
+package org.example.trader.kafka;
 
 import com.example.parser.technicals.CoinTechnicals;
 import com.example.parser.technicals.serialization.TechnicalsRecordDeserializer;

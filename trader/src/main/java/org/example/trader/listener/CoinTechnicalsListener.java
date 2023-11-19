@@ -1,6 +1,6 @@
-package com.example.trader.listener;
+package org.example.trader.listener;
 
-import com.example.parser.technicals.CoinTechnicals;
+import com.example.parser.technicals.CoinTechnicals.TechnicalsRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class CoinTechnicalsListener {
 
     @KafkaListener(topics = {"coins-topic"}, groupId = "coins-topic")
-    void coinsTopicListener(CoinTechnicals.TechnicalsRecord record) {
+    void coinsTopicListener(TechnicalsRecord record) {
         System.out.println(record);
     }
 }
