@@ -37,7 +37,7 @@ public class RestController {
     }
 
     @GetMapping("/parse/all")
-    public CoinTechnicals.TechnicalsRecord[] parseAll() throws InterruptedException, ExecutionException, IOException {
+    public CoinTechnicals.TechnicalsRecord[] parseAll() throws InterruptedException, IOException {
         List<CoinTechnicals> technicals = parsingService.parseTechnicalsFromPairnamesFile();
 
         CoinTechnicals.TechnicalsRecord[] records = new CoinTechnicals.TechnicalsRecord[technicals.size()];
