@@ -1,9 +1,9 @@
-package com.example.tradingview_technical_parser.controller;
+package com.example.parser.controller;
 
-import com.example.tradingview_technical_parser.kafka.KafkaMessageService;
-import com.example.tradingview_technical_parser.service.ParsingService;
-import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
-import com.example.tradingview_technical_parser.utils.PairnameMetadata;
+import com.example.parser.kafka.KafkaMessageService;
+import com.example.parser.service.ParsingService;
+import com.example.parser.technicals.CoinTechnicals;
+import com.example.parser.utils.PairnameMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

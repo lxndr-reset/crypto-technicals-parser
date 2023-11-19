@@ -1,8 +1,8 @@
-package com.example.tradingview_technical_parser.service;
+package com.example.parser.service;
 
-import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
-import com.example.tradingview_technical_parser.technicals.Decision;
-import com.example.tradingview_technical_parser.utils.PairnameMetadata;
+import com.example.parser.technicals.CoinTechnicals;
+import com.example.parser.technicals.Decision;
+import com.example.parser.utils.PairnameMetadata;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -116,7 +116,7 @@ public class ParsingService {
 
     public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, FileNotFoundException {
         BufferedReader reader = new BufferedReader(
-                new FileReader("src/main/java/com/example/tradingview_technical_parser/utils/pairnames")
+                new FileReader("src/main/java/com/example/parser/utils/pairnames")
         );
         Set<PairnameMetadata> pairnameMetadata = fillMetadataFromFile(reader);
         List<Callable<CoinTechnicals>> runnableList = new ArrayList<>();

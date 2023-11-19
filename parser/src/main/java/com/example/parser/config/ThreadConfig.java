@@ -1,4 +1,4 @@
-package com.example.tradingview_technical_parser.config;
+package com.example.parser.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

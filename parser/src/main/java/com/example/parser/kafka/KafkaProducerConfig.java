@@ -1,7 +1,7 @@
-package com.example.tradingview_technical_parser.kafka;
+package com.example.parser.kafka;
 
-import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
-import com.example.tradingview_technical_parser.technicals.serialization.TechnicalsRecordSerializer;
+import com.example.parser.technicals.CoinTechnicals;
+import com.example.parser.technicals.serialization.TechnicalsRecordSerializer;
 import org.apache.kafka.clients.producer.RoundRobinPartitioner;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

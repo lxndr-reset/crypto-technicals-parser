@@ -1,4 +1,4 @@
-package com.example.tradingview_technical_parser.technicals;
+package com.example.parser.technicals;
 
 import java.io.Serializable;
 import java.util.Objects;

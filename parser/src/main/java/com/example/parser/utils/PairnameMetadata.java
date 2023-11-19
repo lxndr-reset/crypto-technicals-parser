@@ -1,4 +1,4 @@
-package com.example.tradingview_technical_parser.utils;
+package com.example.parser.utils;
 
 import java.util.Objects;
 

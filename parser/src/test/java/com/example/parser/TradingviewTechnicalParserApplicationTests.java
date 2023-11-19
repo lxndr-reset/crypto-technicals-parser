@@ -1,4 +1,4 @@
-package com.example.tradingview_technical_parser;
+package com.example.parser;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

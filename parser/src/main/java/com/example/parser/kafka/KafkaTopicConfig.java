@@ -1,6 +1,6 @@
-package com.example.tradingview_technical_parser.kafka;
+package com.example.parser.kafka;
 
-import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
+import com.example.parser.technicals.CoinTechnicals;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.example.tradingview_technical_parser;
+package com.example.parser;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

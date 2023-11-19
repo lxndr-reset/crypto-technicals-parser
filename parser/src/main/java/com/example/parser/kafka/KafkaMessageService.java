@@ -1,6 +1,6 @@
-package com.example.tradingview_technical_parser.kafka;
+package com.example.parser.kafka;
 
-import com.example.tradingview_technical_parser.technicals.CoinTechnicals;
+import com.example.parser.technicals.CoinTechnicals;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
