@@ -11,6 +11,11 @@
         <relativePath/>
     </parent>
 
+    <modules>
+        <module>parser</module>
+        <module>trader</module>
+    </modules>
+
     <groupId>com.example</groupId>
     <artifactId>tradingview_technical_parser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -24,39 +29,18 @@
         <spring.boot.dependencies.version>3.1.5</spring.boot.dependencies.version>
     </properties>
 
-    <modules>
-        <module>parser</module>
-        <module>trader</module>
-    </modules>
-
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.dependencies.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <builder>paketobuildpacks/builder-jammy-base:latest</builder>
-                    </image>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

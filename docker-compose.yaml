@@ -8,6 +8,8 @@ services:
     image: lxndrreset/technicals-parser:latest
     ports:
       - "8081:8081"
+    depends_on:
+      - parser
 
   parser:
     build:

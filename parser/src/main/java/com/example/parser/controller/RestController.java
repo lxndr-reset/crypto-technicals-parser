@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/parser")
