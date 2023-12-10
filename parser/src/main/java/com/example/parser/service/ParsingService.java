@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.*;
 
@@ -70,13 +72,7 @@ public class ParsingService {
     private static void waitUntilDataAreUpdated(WebDriver driver) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(300));
 
-        wait.until(
-                ExpectedConditions.or(
-                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[1]/span[2]"), "0")),
-                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[2]/span[2]"), "0")),
-                        not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[3]/span[2]"), "0"))
-                )
-        );
+        wait.until(ExpectedConditions.or(not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[1]/span[2]"), "0")), not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[2]/span[2]"), "0")), not(textToBe(By.xpath("//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[1]/div[2]/div[3]/span[2]"), "0"))));
 
         Thread.sleep(300);
     }
@@ -100,12 +96,7 @@ public class ParsingService {
 
             waitUntilDataAreUpdated(driver);
 
-            return new CoinTechnicals(
-                    metadata.getPairName(),
-                    Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)),
-                    Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)),
-                    Decision.fromString(extractElementText(driver, SUMMARY_XPATH))
-            );
+            return new CoinTechnicals(metadata.getPairName(), Decision.fromString(extractElementText(driver, OSCILLATORS_XPATH)), Decision.fromString(extractElementText(driver, MOVING_AVERAGES_XPATH)), Decision.fromString(extractElementText(driver, SUMMARY_XPATH)));
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -115,9 +106,14 @@ public class ParsingService {
     }
 
     public List<CoinTechnicals> parseTechnicalsFromPairnamesFile() throws InterruptedException, FileNotFoundException {
-        BufferedReader reader = new BufferedReader(
-                new FileReader("parser/src/main/java/com/example/parser/utils/pairnames")
-        );
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader("parser/src/main/resources/pairnames.txt"));
+        } catch (FileNotFoundException e) { // We can try to find file in classpath.
+            // It's possible when we run an app from .jar file
+            reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("pairnames.txt"))));
+        }
+
         Set<PairnameMetadata> pairnameMetadata = fillMetadataFromFile(reader);
         List<Callable<CoinTechnicals>> runnableList = new ArrayList<>();
 
