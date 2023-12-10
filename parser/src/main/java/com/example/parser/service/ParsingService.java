@@ -5,8 +5,6 @@ import com.example.parser.technicals.Decision;
 import com.example.parser.utils.PairnameMetadata;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +33,11 @@ public class ParsingService {
     private static final String MOVING_AVERAGES_XPATH = "//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[3]";
     private static final String SUMMARY_XPATH = "//*[@id=\"js-category-content\"]/div[2]/div/section/div/div[4]/div[2]";
     private final ExecutorService executor;
+    private final WebDriver webDriver;
 
     @Autowired
-    public ParsingService(ExecutorService executor) {
+    public ParsingService(ExecutorService executor, WebDriver webDriver) {
+        this.webDriver = webDriver;
         this.executor = executor;
     }
 
@@ -85,9 +85,7 @@ public class ParsingService {
      * @return a CoinTechnicals object containing the technical analysis for the coin
      */
     public CoinTechnicals parseTechnicals(PairnameMetadata metadata) {
-        WebDriver driver = buildDriverWithOptions();
-
-        return getCoinTechnicals(metadata, driver);
+        return getCoinTechnicals(metadata, webDriver);
     }
 
     private CoinTechnicals getCoinTechnicals(PairnameMetadata metadata, WebDriver driver) {
@@ -145,15 +143,5 @@ public class ParsingService {
             }
             return technicals;
         };
-    }
-
-    private WebDriver buildDriverWithOptions() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
-
-        WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Integer.MAX_VALUE));
-
-        return driver;
     }
 }

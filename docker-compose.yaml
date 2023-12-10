@@ -17,6 +17,8 @@ services:
     image: lxndrreset/technicals-parser:latest
     ports:
       - "8080:8080"
+    depends_on:
+      - selenium
 
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -50,6 +52,11 @@ services:
 
     depends_on:
       - zookeeper
+
+  selenium:
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
 
 volumes:
   zookeeper_data:
