@@ -4,19 +4,18 @@ services:
 
   trader:
     build:
-      context: .
+      context: ./trader
+    image: lxndrreset/technicals-trader:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - parser
+  parser:
+    build:
+      context: ./parser
     image: lxndrreset/technicals-parser:latest
     ports:
       - "8081:8081"
-    depends_on:
-      - parser
-
-  parser:
-    build:
-      context: .
-    image: lxndrreset/technicals-trader:latest
-    ports:
-      - "8082:8082"
 
   zookeeper:
     image: bitnami/zookeeper:latest
